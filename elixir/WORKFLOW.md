@@ -36,11 +36,11 @@ agent:
   max_concurrent_agents: 10
   max_turns: 20
 codex:
-  command: codex --config shell_environment_policy.inherit=all --config 'model="gpt-5.5"' --config model_reasoning_effort=xhigh app-server
+  command: codex --dangerously-bypass-approvals-and-sandbox --config shell_environment_policy.inherit=all --config 'model="gpt-5.5"' --config model_reasoning_effort=xhigh app-server
   approval_policy: never
-  thread_sandbox: workspace-write
+  thread_sandbox: danger-full-access
   turn_sandbox_policy:
-    type: workspaceWrite
+    type: dangerFullAccess
 ---
 
 You are working on a Linear ticket `{{ issue.identifier }}`
@@ -73,6 +73,8 @@ Instructions:
 1. This is an unattended orchestration session. Never ask a human to perform follow-up actions.
 2. Only stop early for a true blocker (missing required auth/permissions/secrets). If blocked, record it in the workpad and move the issue according to workflow.
 3. Final message must report completed actions and blockers only. Do not include "next steps for user".
+4. Write every Linear-facing comment, reply, workpad update, blocker brief, and handoff note in Simplified Chinese. Keep the marker `## Codex Workpad`, commands, code identifiers, file paths, branch/PR names, and quoted external text in their original language when that is clearer.
+5. Codex is launched in yolo mode with `danger-full-access` inside an isolated worktree. Use the granted permissions directly for development, validation, commits, and PR work instead of asking for approval.
 
 Work only in the provided repository copy. Do not touch any other path.
 
@@ -229,7 +231,7 @@ Use this only when completion is blocked by missing required tools or missing au
     - Mark completed plan/acceptance/validation checklist items as checked.
     - Add final handoff notes (commit + validation summary) in the same workpad comment.
     - Do not include PR URL in the workpad comment; keep PR linkage on the issue via attachment/link fields.
-    - Add a short `### Confusions` section at the bottom when any part of task execution was unclear/confusing, with concise bullets.
+    - Add a short `### 疑点` section at the bottom when any part of task execution was unclear/confusing, with concise bullets.
     - Do not post any additional completion summary comment.
 11. Before moving to `Human Review`, poll PR feedback and checks:
     - Read the PR `Manual QA Plan` comment (when present) and use it to sharpen UI/runtime test coverage for the current change.
@@ -298,7 +300,7 @@ Use this only when completion is blocked by missing required tools or missing au
 
 ## Workpad template
 
-Use this exact structure for the persistent workpad comment and keep it updated in place throughout execution:
+Use this exact structure for the persistent workpad comment and keep it updated in place throughout execution. Keep the `## Codex Workpad` marker exact for lookup; write the rest of the comment in Simplified Chinese:
 
 ````md
 ## Codex Workpad
@@ -307,27 +309,27 @@ Use this exact structure for the persistent workpad comment and keep it updated 
 <hostname>:<abs-path>@<short-sha>
 ```
 
-### Plan
+### 计划
 
-- [ ] 1\. Parent task
-  - [ ] 1.1 Child task
-  - [ ] 1.2 Child task
-- [ ] 2\. Parent task
+- [ ] 1\. 父任务
+  - [ ] 1.1 子任务
+  - [ ] 1.2 子任务
+- [ ] 2\. 父任务
 
-### Acceptance Criteria
+### 验收标准
 
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] 标准 1
+- [ ] 标准 2
 
-### Validation
+### 验证
 
-- [ ] targeted tests: `<command>`
+- [ ] 定向测试：`<command>`
 
-### Notes
+### 记录
 
-- <short progress note with timestamp>
+- <带时间戳的简短进展记录>
 
-### Confusions
+### 疑点
 
-- <only include when something was confusing during execution>
+- <只在执行中有不清楚的事项时填写>
 ````

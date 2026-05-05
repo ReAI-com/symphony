@@ -200,6 +200,25 @@ defmodule SymphonyElixir.CoreTest do
     assert {:error, :workflow_front_matter_not_a_map} = Workflow.load(workflow_path)
   end
 
+  test "workflow load preserves UTF-8 prompt content" do
+    workflow_path = Path.join(Path.dirname(Workflow.workflow_file_path()), "UTF8_WORKFLOW.md")
+
+    File.write!(workflow_path, """
+    ---
+    tracker:
+      kind: memory
+    ---
+    标题：测试报告，逐条检查
+
+    - <只在执行中有不清楚的事项时填写>
+    """)
+
+    assert {:ok, %{prompt_template: prompt_template}} = Workflow.load(workflow_path)
+    assert String.valid?(prompt_template)
+    assert prompt_template =~ "不清楚的事项"
+    assert Jason.encode!(%{"prompt" => prompt_template})
+  end
+
   test "SymphonyElixir.start_link delegates to the orchestrator" do
     write_workflow_file!(Workflow.workflow_file_path(), tracker_kind: "memory")
     Application.put_env(:symphony_elixir, :memory_tracker_issues, [])
