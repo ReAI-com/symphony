@@ -1,7 +1,7 @@
 ---
 tracker:
   kind: linear
-  project_slug: "4542a4663f7d"
+  project_slug: "7abfbdb1c263"
   active_states:
     - Todo
     - In Progress
@@ -20,9 +20,9 @@ workspace:
 hooks:
   after_create: |
     symphony_root="${SYMPHONY_HOME:-$HOME/Developer/Symphony}"
-    local_source="${WAINAO_EDITOR_LOCAL_SOURCE:-$HOME/Developer/wainao_editor}"
-    git clone --depth 1 https://github.com/ReAI-com/wainao_editor.git .
-    WAINAO_EDITOR_LOCAL_SOURCE="$local_source" "$symphony_root/elixir/scripts/copy_wainao_local_config.sh" .
+    local_source="${NI_CHAT_LOCAL_SOURCE:-$HOME/Developer/ni-chat}"
+    git clone --depth 1 https://github.com/kongkang/ni-chat.git .
+    "$symphony_root/elixir/scripts/copy_project_local_config.sh" "$local_source" .
     mkdir -p .codex/skills
     for skill in commit push pull land linear; do
       if [ ! -d ".codex/skills/$skill" ] && [ -d "$symphony_root/.codex/skills/$skill" ]; then
