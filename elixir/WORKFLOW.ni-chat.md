@@ -36,11 +36,11 @@ agent:
   max_concurrent_agents: 10
   max_turns: 20
 codex:
-  command: codex --config shell_environment_policy.inherit=all --config 'model="gpt-5.5"' --config model_reasoning_effort=xhigh app-server
+  command: codex --dangerously-bypass-approvals-and-sandbox --config shell_environment_policy.inherit=all --config 'model="gpt-5.5"' --config model_reasoning_effort=xhigh app-server
   approval_policy: never
-  thread_sandbox: workspace-write
+  thread_sandbox: danger-full-access
   turn_sandbox_policy:
-    type: workspaceWrite
+    type: dangerFullAccess
 ---
 
 You are working on a Linear ticket `{{ issue.identifier }}`
@@ -74,6 +74,7 @@ Instructions:
 2. Only stop early for a true blocker (missing required auth/permissions/secrets). If blocked, record it in the workpad and move the issue according to workflow.
 3. Final message must report completed actions and blockers only. Do not include "next steps for user".
 4. Write every Linear-facing comment, reply, workpad update, blocker brief, and handoff note in Simplified Chinese. Keep the marker `## Codex Workpad`, commands, code identifiers, file paths, branch/PR names, and quoted external text in their original language when that is clearer.
+5. Codex is launched in yolo mode with `danger-full-access` inside an isolated worktree. Use the granted permissions directly for development, validation, commits, and PR work instead of asking for approval.
 
 Work only in the provided repository copy. Do not touch any other path.
 
